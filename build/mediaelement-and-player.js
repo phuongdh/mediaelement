@@ -4010,7 +4010,7 @@ if (typeof jQuery != 'undefined') {
 				}, 500);
 			//}
 
-			if (t.pluginType === 'native') {
+			if (t.media.pluginType === 'native') {
 				t.$media
 					.width('100%')
 					.height('100%');
@@ -4066,12 +4066,12 @@ if (typeof jQuery != 'undefined') {
 				.height(normalHeight);
 				//.css({position: '', left: '', top: '', right: '', bottom: '', overflow: 'inherit', width: normalWidth + 'px', height: normalHeight + 'px', 'z-index': 1});
 
-			if (t.pluginType === 'native') {
+			if (t.media.pluginType === 'native') {
 				t.$media
 					.width(normalWidth)
 					.height(normalHeight);
 			} else {
-				t.container.find('object embed')
+				t.container.find('.mejs-shim')
 					.width(normalWidth)
 					.height(normalHeight);
 
