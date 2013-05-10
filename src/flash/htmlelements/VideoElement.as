@@ -502,6 +502,7 @@ package htmlelements
 
     private function parseRTMP(url:String):Object {
       var match:Array = url.match(/(.*)\/((flv|mp4|mp3):.*)/);
+      var queryString:Array = url.match(/\?(.*)/);
       var rtmpInfo:Object = {
         server: null,
         stream: null
@@ -509,6 +510,9 @@ package htmlelements
 
       if (match) {
         rtmpInfo.server = match[1];
+        if (queryString) {
+          rtmpInfo.server += "?" + queryString[1];
+        }
         rtmpInfo.stream = match[2];
       }
       else {
