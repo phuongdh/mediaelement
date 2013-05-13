@@ -870,6 +870,8 @@
 			}	
 			
 			posterImg.attr('src', url);
+      // HTML5 player gets the poster from here so we need to update it when changing the poster
+      this.$media.attr('poster', url);
 		},
 
 		buildoverlays: function(player, controls, layers, media) {
