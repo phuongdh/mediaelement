@@ -183,11 +183,11 @@ package htmlelements
         // STREAM
         case "NetStream.Play.Start":
 
-          _isPaused = false;
           sendEvent(HtmlMediaEvent.LOADEDDATA);
           sendEvent(HtmlMediaEvent.CANPLAY);
 
           if (!_isPreloading) {
+            _isPaused = false;
 
             sendEvent(HtmlMediaEvent.PLAY);
             sendEvent(HtmlMediaEvent.PLAYING);
@@ -242,8 +242,13 @@ package htmlelements
 
 
       if (_isPreloading) {
-
+        _stream.seek(0);
         _stream.pause();
+        _video.attachNetStream(_stream);
+        _soundTransform = new SoundTransform(_volume);
+        _stream.soundTransform = _soundTransform;
+        _hasStartedPlaying = true;
+
         _isPaused = true;
         _isPreloading = false;
 
@@ -262,6 +267,7 @@ package htmlelements
         // stop and restart
         _stream.pause();
         _video.clear();
+        _video.attachNetStream(null);
       }
 
       _currentUrl = url;
@@ -308,7 +314,7 @@ package htmlelements
       _stream = new NetStream(_connection);
 
       // explicitly set the sound since it could have come before the connection was made
-      _soundTransform = new SoundTransform(_volume);
+      _soundTransform = new SoundTransform(0);
       _stream.soundTransform = _soundTransform;
 
       // set the buffer to ensure nice playback
@@ -322,7 +328,6 @@ package htmlelements
       customClient.onMetaData = onMetaDataHandler;
       _stream.client = customClient;
 
-      _video.attachNetStream(_stream);
 
       // start downloading without playing )based on preload and play() hasn't been called)
       // I wish flash had a load() command to make this less awkward
@@ -331,11 +336,10 @@ package htmlelements
         //stream.bufferTime = 20;
         if(_isRTMP){
           var rtmpInfo:Object = parseRTMP(_currentUrl);
-          _stream.play(rtmpInfo.stream, 0, 0);
+          _stream.play(rtmpInfo.stream, 0);
 	}else{
-          _stream.play(getCurrentUrl(0), 0, 0);
+          _stream.play(getCurrentUrl(0), 0);
 	}
-        _stream.pause();
 
         _isPreloading = true;
 
