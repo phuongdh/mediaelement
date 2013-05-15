@@ -313,10 +313,6 @@ package htmlelements
       trace("connectStream");
       _stream = new NetStream(_connection);
 
-      // explicitly set the sound since it could have come before the connection was made
-      _soundTransform = new SoundTransform(0);
-      _stream.soundTransform = _soundTransform;
-
       // set the buffer to ensure nice playback
       _stream.bufferTime = 1;
       _stream.bufferTimeMax = 3;
@@ -332,20 +328,30 @@ package htmlelements
       // start downloading without playing )based on preload and play() hasn't been called)
       // I wish flash had a load() command to make this less awkward
       if (_preload != "none" && !_playWhenConnected) {
+        // explicitly set the sound since it could have come before the connection was made
+        _soundTransform = new SoundTransform(0);
+        _stream.soundTransform = _soundTransform;
+
         _isPaused = true;
         //stream.bufferTime = 20;
-        if(_isRTMP){
+        if (_isRTMP){
           var rtmpInfo:Object = parseRTMP(_currentUrl);
           _stream.play(rtmpInfo.stream, 0);
-	}else{
+	      } else {
           _stream.play(getCurrentUrl(0), 0);
-	}
+       	}
 
         _isPreloading = true;
 
         //_stream.pause();
         //
         //sendEvent(HtmlMediaEvent.PAUSE); // have to send this because the "playing" event gets sent via event handlers
+      } else {
+        // explicitly set the sound since it could have come before the connection was made
+        _soundTransform = new SoundTransform(_volume);
+        _stream.soundTransform = _soundTransform;
+
+        _video.attachNetStream(_stream);
       }
 
       _isConnected = true;
