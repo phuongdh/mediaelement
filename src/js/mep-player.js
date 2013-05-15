@@ -659,7 +659,7 @@
 						t.showControls();
 					}
 				}, false);
-				
+
 				// resize on the first play
 				t.media.addEventListener('loadedmetadata', function(e) {
 					if (t.updateDuration) {
@@ -675,6 +675,15 @@
 					}
 				}, false);
 
+        // keep the player in sync with the HTML5 video element when switching streams
+				t.media.addEventListener('durationchange', function(e) {
+					if (t.updateDuration) {
+						t.updateDuration();
+					}
+					if (t.updateCurrent) {
+						t.updateCurrent();
+					}
+				}, false);
 
 				// webkit has trouble doing this without a delay
 				setTimeout(function () {
