@@ -329,7 +329,12 @@ package htmlelements
       if (_preload != "none" && !_playWhenConnected) {
         _isPaused = true;
         //stream.bufferTime = 20;
-        _stream.play(getCurrentUrl(0), 0, 0);
+        if(_isRTMP){
+          var rtmpInfo:Object = parseRTMP(_currentUrl);
+          _stream.play(rtmpInfo.stream, 0, 0);
+	}else{
+          _stream.play(getCurrentUrl(0), 0, 0);
+	}
         _stream.pause();
 
         _isPreloading = true;
