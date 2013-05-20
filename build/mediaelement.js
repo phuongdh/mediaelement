@@ -595,6 +595,8 @@ mejs.PluginMediaElement.prototype = {
 			}
 		}
 
+    // Unhides the poster when switching streams
+    $('.mejs-poster').show();
 	},
 	setCurrentTime: function (time) {
 		if (this.pluginApi != null) {

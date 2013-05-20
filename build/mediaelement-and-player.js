@@ -595,6 +595,8 @@ mejs.PluginMediaElement.prototype = {
 			}
 		}
 
+    // Unhides the poster when switching streams
+    $('.mejs-poster').show();
 	},
 	setCurrentTime: function (time) {
 		if (this.pluginApi != null) {
@@ -2548,7 +2550,7 @@ if (typeof jQuery != 'undefined') {
 						t.showControls();
 					}
 				}, false);
-				
+
 				// resize on the first play
 				t.media.addEventListener('loadedmetadata', function(e) {
 					if (t.updateDuration) {
@@ -2564,6 +2566,15 @@ if (typeof jQuery != 'undefined') {
 					}
 				}, false);
 
+        // keep the player in sync with the HTML5 video element when switching streams
+				t.media.addEventListener('durationchange', function(e) {
+					if (t.updateDuration) {
+						t.updateDuration();
+					}
+					if (t.updateCurrent) {
+						t.updateCurrent();
+					}
+				}, false);
 
 				// webkit has trouble doing this without a delay
 				setTimeout(function () {
@@ -2759,6 +2770,8 @@ if (typeof jQuery != 'undefined') {
 			}	
 			
 			posterImg.attr('src', url);
+      // HTML5 player gets the poster from here so we need to update it when changing the poster
+      this.$media.attr('poster', url);
 		},
 
 		buildoverlays: function(player, controls, layers, media) {
