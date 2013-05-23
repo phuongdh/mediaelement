@@ -891,7 +891,7 @@ if (typeof jQuery != 'undefined') {
 				posterImg = posterDiv.find('img');
 				
 			if (posterImg.length == 0) {
-				posterImg = $('<img width="100%" height="100%" />').appendTo(posterDiv);
+				posterImg = $('<img />').appendTo(posterDiv);
 			}	
 			
 			posterImg.attr('src', url);
@@ -2071,38 +2071,36 @@ if (typeof jQuery != 'undefined') {
 			normalWidth = t.container.width();
 
 			// attempt to do true fullscreen (Safari 5.1 and Firefox Nightly only for now)
-			if (t.media.pluginType === 'native') {
-				if (mejs.MediaFeatures.hasTrueNativeFullScreen) {
+			if (mejs.MediaFeatures.hasTrueNativeFullScreen) {
 
-					mejs.MediaFeatures.requestFullScreen(t.container[0]);
-					//return;
+				mejs.MediaFeatures.requestFullScreen(t.container[0]);
+				//return;
 
-					if (t.isInIframe) {
-						// sometimes exiting from fullscreen doesn't work
-						// notably in Chrome <iframe>. Fixed in version 17
-						setTimeout(function checkFullscreen() {
+				if (t.isInIframe) {
+					// sometimes exiting from fullscreen doesn't work
+					// notably in Chrome <iframe>. Fixed in version 17
+					setTimeout(function checkFullscreen() {
 
-							if (t.isNativeFullScreen) {
+						if (t.isNativeFullScreen) {
 
-								// check if the video is suddenly not really fullscreen
-								if ($(window).width() !== screen.width) {
-									// manually exit
-									t.exitFullScreen();
-								} else {
-									// test again
-									setTimeout(checkFullscreen, 500);
-								}
+							// check if the video is suddenly not really fullscreen
+							if ($(window).width() !== screen.width) {
+								// manually exit
+								t.exitFullScreen();
+							} else {
+								// test again
+								setTimeout(checkFullscreen, 500);
 							}
+						}
 
 
-						}, 500);
-					}
-
-				} else if (mejs.MediaFeatures.hasSemiNativeFullScreen) {
-					t.media.webkitEnterFullscreen();
-					return;
+					}, 500);
 				}
-			}
+
+			} else if (mejs.MediaFeatures.hasSemiNativeFullScreen) {
+				t.media.webkitEnterFullscreen();
+				return;
+	  	}
 
 			// check for iframe launch
 			if (t.isInIframe) {
@@ -2157,9 +2155,11 @@ if (typeof jQuery != 'undefined') {
 					.width('100%')
 					.height('100%');
 
-				//if (!mejs.MediaFeatures.hasTrueNativeFullScreen) {
+				if (mejs.MediaFeatures.hasTrueNativeFullScreen) {
+					t.media.setVideoSize(screen.width,screen.height);          
+				} else {
 					t.media.setVideoSize($(window).width(),$(window).height());
-				//}
+        }
 			}
 
 			t.layers.children('div')
