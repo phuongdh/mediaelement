@@ -156,7 +156,7 @@ package htmlelements
 
     // internal events
     private function netStatusHandler(event:NetStatusEvent):void {
-      trace("netStatus", event.info.code);
+      trace("netStatus " + event.info.code + " isPreloading: " + _isPreloading);
 
       switch (event.info.code) {
 
@@ -183,15 +183,13 @@ package htmlelements
         // STREAM
         case "NetStream.Play.Start":
 
-          sendEvent(HtmlMediaEvent.LOADEDDATA);
-          sendEvent(HtmlMediaEvent.CANPLAY);
 
           if (!_isPreloading) {
+            sendEvent(HtmlMediaEvent.CANPLAY);
             _isPaused = false;
 
             sendEvent(HtmlMediaEvent.PLAY);
             sendEvent(HtmlMediaEvent.PLAYING);
-
           }
 
           _timer.start();
@@ -236,13 +234,12 @@ package htmlelements
 
 
       // set size?
-
+      trace("received metadata");
       sendEvent(HtmlMediaEvent.LOADEDMETADATA);
 
 
 
       if (_isPreloading) {
-        _stream.seek(0);
         _stream.pause();
         _video.attachNetStream(_stream);
         _soundTransform = new SoundTransform(_volume);
@@ -251,6 +248,7 @@ package htmlelements
 
         _isPaused = true;
         _isPreloading = false;
+        trace("done preloading");
 
         sendEvent(HtmlMediaEvent.PROGRESS);
         sendEvent(HtmlMediaEvent.TIMEUPDATE);
@@ -333,6 +331,7 @@ package htmlelements
       // I wish flash had a load() command to make this less awkward
       if (_preload != "none" && !_playWhenConnected) {
         _isPaused = true;
+        _isPreloading = true;
         //stream.bufferTime = 20;
         if(_isRTMP){
           var rtmpInfo:Object = parseRTMP(_currentUrl);
@@ -340,8 +339,6 @@ package htmlelements
 	}else{
           _stream.play(getCurrentUrl(0), 0);
 	}
-
-        _isPreloading = true;
 
         //_stream.pause();
         //
