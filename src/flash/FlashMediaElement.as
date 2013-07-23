@@ -541,7 +541,7 @@
       
       if ( _controlStyle.toUpperCase() == "FLOATING" && _isFullScreen) {
 
-        trace("CONTROLS: floating");
+//        trace("CONTROLS: floating");
         _hoverTime.y=(_hoverTime.height/2)+1;
         _hoverTime.x=0;
         _controlBarBg.width = 300;
@@ -580,7 +580,7 @@
 
         
       } else {
-        trace("CONTROLS: normal, original");
+//        trace("CONTROLS: normal, original");
         
         /*
         // Original style bottom display
@@ -597,7 +597,7 @@
         */
         
         // FLOATING MODE BOTTOM DISPLAY - similar to normal
-        trace("THAT WAY!");
+        //trace("THAT WAY!");
         _hoverTime.y=(_hoverTime.height/2)+1;
         _hoverTime.x=0;
         _controlBarBg.width = stage.stageWidth;

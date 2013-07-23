@@ -156,7 +156,7 @@ package htmlelements
 
     // internal events
     private function netStatusHandler(event:NetStatusEvent):void {
-      trace("netStatus", event.info.code);
+      trace("netStatus " + event.info.code + " isPreloading: " + _isPreloading);
 
       switch (event.info.code) {
 
@@ -185,23 +185,16 @@ package htmlelements
 
         // STREAM
         case "NetStream.Play.Start":
-
-          sendEvent(HtmlMediaEvent.LOADEDDATA);
-          sendEvent(HtmlMediaEvent.CANPLAY);
-
-          if (!_isPreloading) {
-            _isPaused = false;
-
+          if (!_isPreloading && !_isPaused) {
+            sendEvent(HtmlMediaEvent.CANPLAY);
             sendEvent(HtmlMediaEvent.PLAY);
             sendEvent(HtmlMediaEvent.PLAYING);
-
+            _timer.start();
           }
-
-          _timer.start();
-
           break;
 
-        case "NetStream.Seek.Notify":
+        case "NetStream.Seek.Complete":
+          sendEvent(HtmlMediaEvent.PROGRESS);
           sendEvent(HtmlMediaEvent.SEEKED);
           break;
 
@@ -240,13 +233,12 @@ package htmlelements
 
 
       // set size?
-
+      trace("received metadata");
       sendEvent(HtmlMediaEvent.LOADEDMETADATA);
 
 
 
       if (_isPreloading) {
-        _stream.seek(0);
         _stream.pause();
         _video.attachNetStream(_stream);
         _soundTransform = new SoundTransform(_volume);
@@ -255,6 +247,7 @@ package htmlelements
 
         _isPaused = true;
         _isPreloading = false;
+        trace("done preloading");
 
         sendEvent(HtmlMediaEvent.PROGRESS);
         sendEvent(HtmlMediaEvent.TIMEUPDATE);
@@ -337,6 +330,7 @@ package htmlelements
         _stream.soundTransform = _soundTransform;
 
         _isPaused = true;
+        _isPreloading = true;
         //stream.bufferTime = 20;
         if (_isRTMP){
           var rtmpInfo:Object = parseRTMP(_currentUrl);
@@ -344,8 +338,6 @@ package htmlelements
 	      } else {
           _stream.play(getCurrentUrl(0), 0);
        	}
-
-        _isPreloading = true;
 
         //_stream.pause();
         //
@@ -378,10 +370,7 @@ package htmlelements
       if (_hasStartedPlaying) {
         if (_isPaused) {
           _stream.resume();
-          _timer.start();
           _isPaused = false;
-          sendEvent(HtmlMediaEvent.PLAY);
-          sendEvent(HtmlMediaEvent.PLAYING);
         }
       } else {
 
