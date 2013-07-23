@@ -6,7 +6,7 @@ package htmlelements
   import flash.net.NetStream;
   import flash.media.Video;
   import flash.media.SoundTransform;
-  import flash.utils.Timer;
+  import flash.utils.*;
 
   import FlashMediaElement;
   import HtmlMediaEvent;
@@ -16,7 +16,6 @@ package htmlelements
     private var _currentUrl:String = "";
     private var _autoplay:Boolean = true;
     private var _preload:String = "";
-    private var _isPreloading:Boolean = false;
 
     private var _connection:NetConnection;
     private var _stream:NetStream;
@@ -32,6 +31,8 @@ package htmlelements
     private var _isEnded:Boolean = false;
     private var _volume:Number = 1;
     private var _isMuted:Boolean = false;
+    private var _isPreloading:Boolean = false;
+    private var _isSeeking:Boolean = false;
 
     private var _bytesLoaded:Number = 0;
     private var _bytesTotal:Number = 0;
@@ -193,7 +194,13 @@ package htmlelements
           }
           break;
 
+        case "NetStream.SeekStart.Notify":
+          _isSeeking = true;
+          setTimeout(playIfStuck, 100);
+          break;
+
         case "NetStream.Seek.Complete":
+          _isSeeking = false;
           sendEvent(HtmlMediaEvent.PROGRESS);
           sendEvent(HtmlMediaEvent.SEEKED);
           break;
@@ -214,6 +221,17 @@ package htmlelements
       }
     }
 
+    // Workaround for Red5 bug, which doesn't send NetStream.Seek.Complete
+    // This event only comes after we click play again
+    private function playIfStuck():void {
+      if (_isSeeking) {
+        play();
+        pause();
+        sendEvent(HtmlMediaEvent.PROGRESS);
+        sendEvent(HtmlMediaEvent.SEEKED);
+        _isSeeking = false;
+      }
+    }
 
     private function securityErrorHandler(event:SecurityErrorEvent):void {
       trace("securityErrorHandler: " + event);
