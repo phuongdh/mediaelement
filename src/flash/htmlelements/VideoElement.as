@@ -196,12 +196,13 @@ package htmlelements
 
         case "NetStream.SeekStart.Notify":
           _isSeeking = true;
-          setTimeout(playIfStuck, 100);
+          setTimeout(playIfStuck, 300);
           break;
 
         case "NetStream.Seek.Complete":
           _isSeeking = false;
           sendEvent(HtmlMediaEvent.PROGRESS);
+          sendEvent(HtmlMediaEvent.TIMEUPDATE);
           sendEvent(HtmlMediaEvent.SEEKED);
           break;
 
@@ -224,11 +225,11 @@ package htmlelements
     // Workaround for Red5 bug, which doesn't send NetStream.Seek.Complete
     // This event only comes after we click play again
     private function playIfStuck():void {
-      if (_isSeeking) {
-        play();
-        pause();
-        sendEvent(HtmlMediaEvent.PROGRESS);
-        sendEvent(HtmlMediaEvent.SEEKED);
+      if (_isSeeking && _isPaused) {
+        _stream.resume();
+        _stream.pause();
+        //play();
+        //pause();
         _isSeeking = false;
       }
     }
