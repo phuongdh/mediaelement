@@ -46,6 +46,7 @@ package htmlelements
     private var _videoHeight:Number = -1;
 
     private var _timer:Timer;
+    private var _playIfStuckInterval:Number = 0;
 
     private var _isRTMP:Boolean = false;
     private var _streamer:String = "";
@@ -228,9 +229,7 @@ package htmlelements
       if (_isSeeking && _isPaused) {
         _stream.resume();
         _stream.pause();
-        //play();
-        //pause();
-        _isSeeking = false;
+        trace("Play/Pausing because I haven't received NetStream.Seek.Complete");
       }
     }
 
